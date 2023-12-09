@@ -2,10 +2,13 @@
  * Zdefiniuj funkcję, która generuje kolejne liczby parzyste większę lub równe `n` i mniejsze lub równe `m`.
  */
 
-function* evenNumbers(n, m) {
-    for (let i = n; i <= m; i++) {
-        if (i % 2 === 0) {
-            yield i
+function *evenNumbers(n, m){
+    n = Math.floor(n);
+    m = Math.floor(m);
+
+        for (let i = n; i <= m; i++) {
+        if (i % 2 == 0) {
+            yield i;
         }
     }
 }

@@ -24,59 +24,92 @@
  *  Dopasuj konstruktor do przykładowego wywołania w testach.
  */
 class TodoTask {
-	constructor(description, deadline) {
-        if (deadline < new Date()) {
+    constructor(title, description, deadline, getCurrentDate) {
+        if (deadline < getCurrentDate()) {
             throw new Error("Deadline cannot be in the past");
         }
-
+ 
+        this._title = title;
         this._description = description;
         this._deadline = deadline;
         this._finished = null;
         this._done = false;
-        this._created = new Date();
+        this._created = getCurrentDate();
     }
-
+ 
+    get title() {
+        return this._title;
+    }
+ 
+    set title(newTitle) {
+        this._checkIfNotDoneOrFinished();
+        this._title = newTitle;
+    }
+ 
     get description() {
         return this._description;
     }
-
+ 
     set description(newDescription) {
-        if (!this._done) {
-            this._description = newDescription;
-        }
+        this._checkIfNotDoneOrFinished();
+        this._description = newDescription;
     }
-
+ 
     get deadline() {
         return this._deadline;
     }
-
+ 
     set deadline(newDeadline) {
-        if (!this._done && newDeadline > this._deadline) {
+        this._checkIfNotDoneOrFinished();
+        if (newDeadline > this._getCurrentDate()) {
             this._deadline = newDeadline;
+        } else {
+            throw new Error("New deadline must be later than the current date");
         }
     }
-
+ 
     get finished() {
         return this._finished;
     }
-
+ 
+    set finished(value) {
+        throw new Error("Cannot directly set 'finished' field");
+    }
+ 
     get done() {
         return this._done;
     }
-
+ 
     set done(isDone) {
-        if (!this._done && !isDone) {
-            this._done = false;
-        } else if (!this._done && isDone && new Date() <= this._deadline) {
-            this._done = true;
-            this._finished = new Date();
+        if (!this._done && !this._finished) {
+            if (isDone) {
+                if (this._getCurrentDate() > this._deadline) {
+                    throw new Error("Cannot mark task as done after the deadline");
+                }
+ 
+                this._finished = this._getCurrentDate();
+            }
+            this._done = isDone;
+        } else {
+            throw new Error("Task is already marked as done");
         }
     }
-
+ 
     get created() {
         return this._created;
     }
+ 
+    _getCurrentDate() {
+        return new Date();
+    }
+ 
+    _checkIfNotDoneOrFinished() {
+        if (this._done || this._finished) {
+            throw new Error("Task cannot be modified after it is done or finished");
+        }
+    }
 }
+
 
 
 //Uwaga! Testy działają tylko w dniu zajęć tj. 26.11.2022
